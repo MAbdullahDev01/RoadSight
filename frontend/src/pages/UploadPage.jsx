@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import ErrorBanner from "../components/ErrorBanner";
 import ImageUploader from "../components/ImageUploader";
+import LoadingSpinner from "../components/LoadingSpinner";
 import PreviewCard from "../components/PreviewCard";
+import useUpload from "../hooks/useUpload";
+
 
 export default function UploadPage() {
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const navigate = useNavigate();
+  const { upload, loading, error } = useUpload();
 
   const handleImageSelect = (file) => {
     setImageFile(file);
@@ -22,13 +29,35 @@ export default function UploadPage() {
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);
 
+  const handleSubmit = async () => {
+  if (!imageFile) return;
+
+  try {
+    const result = await upload(imageFile);
+    navigate("/results", { state: result });
+  } catch {
+    // error handled by hook
+  }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6">
       <h1 className="text-2xl font-semibold mb-4">Upload Road Image</h1>
 
       <ImageUploader onImageSelect={handleImageSelect} />
 
-      {previewUrl && <PreviewCard previewUrl={previewUrl} />}
+      {previewUrl && (
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="mt-4 px-6 py-2 bg-black text-white rounded disabled:opacity-50"
+        >
+          Analyze Image
+        </button>
+      )}
+
+      {loading && <LoadingSpinner />}
+      {error && <ErrorBanner message={error} />}
     </div>
   );
 }
