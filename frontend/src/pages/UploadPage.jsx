@@ -41,23 +41,25 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6">
-      <h1 className="text-2xl font-semibold mb-4">Upload Road Image</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+      <div className="w-full max-w-lg bg-white rounded-xl shadow p-6">
+        <h1 className="text-2xl font-semibold mb-4">Upload Road Image</h1>
 
-      <ImageUploader onImageSelect={handleImageSelect} />
+        <ImageUploader onImageSelect={handleImageSelect} />
 
-      {previewUrl && (
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="mt-4 px-6 py-2 bg-black text-white rounded disabled:opacity-50"
-        >
-          Analyze Image
-        </button>
-      )}
+        {previewUrl && (
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="mt-4 px-6 py-2 bg-black text-white rounded disabled:opacity-50"
+          >
+            Analyze Image
+          </button>
+        )}
 
-      {loading && <LoadingSpinner />}
-      {error && <ErrorBanner message={error} />}
+        {loading && <LoadingSpinner />}
+        {error && <ErrorBanner message={error} />}
+      </div>
     </div>
   );
 }

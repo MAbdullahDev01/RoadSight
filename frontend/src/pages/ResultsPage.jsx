@@ -11,8 +11,10 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <ResultCard result={state} />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+      <div className="w-full max-w-lg bg-white rounded-xl shadow p-6">
+        <ResultCard result={state} />
+      </div>
     </div>
   );
 }
