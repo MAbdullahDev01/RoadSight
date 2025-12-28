@@ -48,12 +48,23 @@ export default function UploadPage() {
         <ImageUploader onImageSelect={handleImageSelect} />
 
         {previewUrl && (
+          <div className="mt-4">
+            <PreviewCard previewUrl={previewUrl} /> 
+          </div>
+        )}
+
+        <p className="text-sm text-gray-500 mt-2 text-center">
+          Upload a different image to replace the current one.
+        </p>
+
+
+        {previewUrl && (
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="mt-4 px-6 py-2 bg-black text-white rounded disabled:opacity-50"
+            className="mt-4 w-full px-6 py-2 bg-black text-white rounded disabled:opacity-50"
           >
-            Analyze Image
+            {loading ? "Analyzing..." : "Analyze Image"}
           </button>
         )}
 
