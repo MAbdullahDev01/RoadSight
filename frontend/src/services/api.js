@@ -1,10 +1,19 @@
 import axios from "axios";
 
+/**
+ * Centralized Axios instance.
+ * Keeps backend configuration isolated from UI logic.
+ */
 const api = axios.create({
-  baseURL: "http://localhost:8000", // backend placeholder
+  baseURL: "http://localhost:8000", // TODO: move to env in production
   timeout: 10000,
 });
 
+/**
+ * Uploads an image to the backend for prediction.
+ * @param {File} imageFile
+ * @returns {Promise<Object>} prediction result
+ */
 export const uploadImage = async (imageFile) => {
   const formData = new FormData();
   formData.append("image", imageFile);
