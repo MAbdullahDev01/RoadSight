@@ -1,3 +1,7 @@
 export default function LoadingSpinner() {
-  return null;
+  return (
+    <div className="mt-4 text-gray-600 animate-pulse">
+      Analyzing image...
+    </div>
+  );
 }
