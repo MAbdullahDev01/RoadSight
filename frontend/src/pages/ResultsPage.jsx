@@ -14,6 +14,12 @@ export default function ResultsPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="w-full max-w-lg bg-white rounded-xl shadow p-6">
         <ResultCard result={state} />
+        <button
+          onClick={() => navigate("/")}
+          className="mt-4 text-sm text-blue-600 underline"
+        >
+          Analyze another image
+        </button>
       </div>
     </div>
   );
