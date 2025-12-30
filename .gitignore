@@ -231,4 +231,6 @@ dist-ssr
 *.sln
 *.sw?
 
-raw/
+#ML data and models
+ml/data/
+ml/models/
