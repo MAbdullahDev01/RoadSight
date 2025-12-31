@@ -1,12 +1,11 @@
 from fastapi import FastAPI
+from app.api import predict
 
-# Create the FastAPI app
 app = FastAPI(title="RoadSight Backend API", version="0.1")
 
-# Root endpoint
+# Include predict router
+app.include_router(predict.router, prefix="/api")
+
 @app.get("/")
 async def root():
-    """
-    Basic root endpoint to check if API is running.
-    """
     return {"message": "RoadSight API is live!"}
