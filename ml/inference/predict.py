@@ -1,47 +1,87 @@
 import torch
-import torch.nn as nn
 from torchvision import models, transforms
 from PIL import Image
 import sys
+import os
+from glob import glob
 
-preprocess = transforms.Compose([
-    transforms.Resize((224,224)),
+# -----------------------------
+# 1️⃣ Check command-line arguments
+# -----------------------------
+if len(sys.argv) != 2:
+    print("Usage: python predict.py <path_to_image_or_folder>")
+    sys.exit(1)
+
+input_path = sys.argv[1]
+
+# -----------------------------
+# 2️⃣ Device setup
+# -----------------------------
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# -----------------------------
+# 3️⃣ Define preprocessing transforms
+# -----------------------------
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485,0.456,0.406], std=[0.229,0.224,0.225])
 ])
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# -----------------------------
+# 4️⃣ Load the fine-tuned model
+# -----------------------------
+model_path = os.path.join(os.path.dirname(__file__), "../models/roadsight_v2.pt")
+
+if not os.path.exists(model_path):
+    print(f"Error: Model not found at '{model_path}'")
+    sys.exit(1)
 
 model = models.resnet18(pretrained=False)
 num_features = model.fc.in_features
-model.fc = nn.Linear(num_features, 2)  # 2 classes: damage / no damage
-
-model_path = r"C:\Users\saima\OneDrive\Desktop\RoadSight\RoadSight\ml\models\roadsight_v1.pt"
+model.fc = torch.nn.Linear(num_features, 2)  # 2 classes: damage / no damage
 model.load_state_dict(torch.load(model_path, map_location=device))
 model = model.to(device)
-model.eval()  # Set to evaluation mode
+model.eval()
 
-def predict_image(image_path):
-    # Load image
-    image = Image.open(image_path).convert('RGB')
+# -----------------------------
+# 5️⃣ Prediction function
+# -----------------------------
+def predict_image(img_path):
+    try:
+        image = Image.open(img_path).convert("RGB")
+    except Exception as e:
+        print(f"Failed to open image {img_path}: {e}")
+        return None
     
-    # Preprocess
-    image = preprocess(image)
-    image = image.unsqueeze(0)  # Add batch dimension
-    image = image.to(device)
+    image_tensor = transform(image).unsqueeze(0).to(device)
     
     with torch.no_grad():
-        output = model(image)
-        _, pred = torch.max(output, 1)
+        outputs = model(image_tensor)
+        _, predicted = torch.max(outputs, 1)
     
-    classes = {0: "no damage", 1: "damage"}
-    return classes[pred.item()]
+    labels = {0: "no damage", 1: "damage"}
+    return labels[int(predicted.item())]
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python predict.py <image_path>")
+# -----------------------------
+# 6️⃣ Prepare list of images
+# -----------------------------
+if os.path.isdir(input_path):
+    # Get all image files in the folder (jpg, png)
+    image_files = glob(os.path.join(input_path, "*.[jp][pn]g"))
+    if len(image_files) == 0:
+        print(f"No images found in folder: {input_path}")
         sys.exit(1)
-    
-    image_path = sys.argv[1]
-    prediction = predict_image(image_path)
-    print(f"Prediction for {image_path}: {prediction}")
+else:
+    if not os.path.exists(input_path):
+        print(f"Error: Image not found at '{input_path}'")
+        sys.exit(1)
+    image_files = [input_path]
+
+# -----------------------------
+# 7️⃣ Run predictions
+# -----------------------------
+for img_path in image_files:
+    prediction = predict_image(img_path)
+    if prediction is not None:
+        print(f"Prediction for {img_path}: {prediction}")
