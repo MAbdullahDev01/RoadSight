@@ -42,34 +42,42 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <div className="w-full max-w-lg bg-white rounded-xl shadow-sm p-6">
-        <h1 className="text-2xl font-semibold text-center mb-6">
-          Road Condition Analysis
-        </h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#F9FAFB] p-6 selection:bg-indigo-100">
+      <div className="w-full max-w-lg">
+        <div className="mb-10 text-center">
+          <h1 className="text-3xl font-extrabold text-zinc-900 tracking-tight mb-2">
+            RoadSight
+          </h1>
+          <p className="text-zinc-500">Upload road imagery for instant condition diagnostics.</p>
+        </div>
 
-        <ImageUploader onImageSelect={setImageFile} disabled={loading} />
+        <div className="bg-white rounded-3xl shadow-xl shadow-zinc-200/60 border border-zinc-100 p-8">
+          <ImageUploader onImageSelect={setImageFile} disabled={loading} />
 
-        {previewUrl && (
-          <>
-            <PreviewCard previewUrl={previewUrl} />
-            <p className="text-sm text-gray-500 mt-2 text-center">
-              Upload another image to replace the current one.
-            </p>
+          {previewUrl && (
+            <div className="animate-in fade-in zoom-in-95 duration-500">
+              <PreviewCard previewUrl={previewUrl} />
+              
+              <div className="mt-8 flex flex-col gap-3">
+                <button
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="w-full px-6 py-3 bg-zinc-900 text-white font-semibold rounded-xl
+                           hover:bg-zinc-800 active:scale-[0.98] transition-all disabled:opacity-50
+                           shadow-lg shadow-zinc-200"
+                >
+                  {loading ? "Processing..." : "Generate Analysis"}
+                </button>
+                <p className="text-center text-[11px] text-zinc-400 font-medium">
+                  By uploading, you agree to our terms of processing.
+                </p>
+              </div>
+            </div>
+          )}
 
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="mt-6 w-full px-4 py-2 bg-black text-white rounded-lg
-                         hover:bg-gray-800 transition disabled:opacity-50"
-            >
-              {loading ? "Analyzing..." : "Analyze Image"}
-            </button>
-          </>
-        )}
-
-        {loading && <LoadingSpinner />}
-        {error && <ErrorBanner message={error} />}
+          {loading && <LoadingSpinner />}
+          {error && <ErrorBanner message={error} />}
+        </div>
       </div>
     </div>
   );
