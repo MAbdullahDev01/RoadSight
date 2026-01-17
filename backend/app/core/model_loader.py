@@ -3,7 +3,7 @@ import torch
 from torchvision import models
 
 # Path to your fine-tuned model
-MODEL_PATH = r"C:\Users\saima\OneDrive\Desktop\RoadSight\RoadSight\ml\models\roadsight_v2.pt"
+MODEL_PATH = r"C:\Users\saima\OneDrive\Desktop\RoadSight\RoadSight\backend\ml\models\roadsight_v2.pt"
 
 class RoadSightModel:
     def __init__(self, model_path=MODEL_PATH, device=None):

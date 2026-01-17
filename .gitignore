@@ -232,5 +232,6 @@ dist-ssr
 *.sw?
 
 #ML data and models
-ml/data/
-ml/models/
+backend/ml/data/
+backend/ml/models/
+backend/ml/notebooks/

@@ -1,32 +1,24 @@
 import { useState } from "react";
 import { uploadImage } from "../services/api";
 
-/**
- * Custom hook encapsulating the image upload lifecycle.
- * Manages loading, error, and result states in one place.
- */
 export default function useUpload() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [result, setResult] = useState(null);
 
-  const upload = async (imageFile) => {
-    if (!imageFile) return;
-
+  const upload = async (file) => {
     setLoading(true);
     setError(null);
 
     try {
-      const data = await uploadImage(imageFile);
-      setResult(data);
-      return data;
+      const data = await uploadImage(file);
+      return data; // ✅ IMPORTANT
     } catch (err) {
-      setError("Failed to analyze image. Please try again.");
-      throw err;
+      setError("Upload failed. Please try again.");
+      throw err; // ✅ allow caller to handle it
     } finally {
       setLoading(false);
     }
   };
 
-  return { upload, loading, error, result };
+  return { upload, loading, error };
 }

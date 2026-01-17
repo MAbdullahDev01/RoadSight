@@ -2,52 +2,53 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from PIL import Image
 import io
-import torch
-import sys
-import os
 
-# Add project root to path to import ml package
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
-
-from ml.training.transforms import val_transforms  # preprocessing
-from app.core.model_loader import model_instance      # your model loader
+from app.services.inference import run_inference
 
 router = APIRouter()
 
 @router.post("/predict")
-async def predict(file: UploadFile = File(...)):
+async def predict(image: UploadFile = File(...)):
     try:
+        # Validate content type
+        if image.content_type not in ["image/jpeg", "image/png"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid file type. Only JPEG and PNG are supported."
+            )
+
         # Read image bytes
-        contents = await file.read()
-        image = Image.open(io.BytesIO(contents)).convert("RGB")
+        image_bytes = await image.read()
+        pil_image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
-        # Preprocess image
-        image_tensor = val_transforms(image).unsqueeze(0)  # add batch dimension
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        image_tensor = image_tensor.to(device)
+        # Run ML inference
+        ml_output = run_inference(pil_image)
+        prediction = ml_output["prediction"]
+        confidence = ml_output["confidence"]
 
-        # Run inference
-        model = model_instance.model
-        model.to(device)
-        model.eval()
-        with torch.no_grad():
-            output = model(image_tensor)
-            probs = torch.nn.functional.softmax(output, dim=1)
-            pred_idx = output.argmax(dim=1).item()
-            confidence = probs[0][pred_idx].item()
+        # 🔁 Domain mapping (ML → Product)
+        if prediction == "damage":
+            condition = "Potholes detected"
+            safety_note = "Reduce speed and avoid sudden braking."
+        else:
+            condition = "Road appears safe"
+            safety_note = "Maintain normal driving speed."
 
-        classes = ["no_damage", "damage"]
-        prediction = classes[pred_idx]
-
+        # ✅ Frontend contract (EXACT MATCH)
         return JSONResponse(
             content={
-                "filename": file.filename,
-                "prediction": prediction,
-                "confidence": round(confidence, 4)
+                "condition": condition,
+                "confidence": round(confidence, 2),
+                "safety_note": safety_note
             }
         )
 
+    except HTTPException:
+        raise
+
     except Exception as e:
-        # Log error and return 500
-        print(f"Error in /predict: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"[ERROR] Prediction failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error during prediction"
+        )

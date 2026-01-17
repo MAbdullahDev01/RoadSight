@@ -6,7 +6,7 @@ import axios from "axios";
  */
 const api = axios.create({
   baseURL: "http://localhost:8000", // TODO: move to env in production
-  timeout: 10000,
+  timeout: 15000,
 });
 
 /**
@@ -14,11 +14,12 @@ const api = axios.create({
  * @param {File} imageFile
  * @returns {Promise<Object>} prediction result
  */
+
 export const uploadImage = async (imageFile) => {
   const formData = new FormData();
-  formData.append("image", imageFile);
+  formData.append("image", imageFile); // ⚠️ MUST be "image"
 
-  const response = await api.post("/predict", formData, {
+  const response = await api.post("/api/predict", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -26,3 +27,5 @@ export const uploadImage = async (imageFile) => {
 
   return response.data;
 };
+
+export default api;
