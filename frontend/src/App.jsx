@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UploadPage from "./pages/UploadPage";
 import ResultsPage from "./pages/ResultsPage";
+import HomePage from "./pages/HomePage";
 
 /**
  * Root application component.
@@ -10,10 +11,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Entry point: image upload */}
-        <Route path="/" element={<UploadPage />} />
-
-        {/* Results page: displays model prediction */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/upload" element={<UploadPage />} />
         <Route path="/results" element={<ResultsPage />} />
       </Routes>
     </BrowserRouter>
