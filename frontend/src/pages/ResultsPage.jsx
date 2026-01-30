@@ -20,7 +20,7 @@ export default function ResultsPage() {
         <ResultCard result={state} />
 
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/upload")}
           className="mt-8 group flex items-center gap-2 mx-auto text-sm font-semibold text-zinc-500 hover:text-indigo-600 transition-colors"
         >
           <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
