@@ -11,10 +11,13 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 # -----------------------------
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-image_dir = r"C:\Users\saima\OneDrive\Desktop\RoadSight\RoadSight\ml\data\raw\RDD2020\Japan\images"
-annotation_dir = r"C:\Users\saima\OneDrive\Desktop\RoadSight\RoadSight\ml\data\raw\RDD2020\Japan\annotations\xmls"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+ml_root = os.path.dirname(current_dir)
 
-model_path = r"C:\Users\saima\OneDrive\Desktop\RoadSight\RoadSight\ml\models\roadsight_v2.pt"
+image_dir = os.path.join(ml_root, 'data', 'raw', 'RDD2020', 'India', 'images')
+annotation_dir = os.path.join(ml_root, 'data', 'raw', 'RDD2020', 'India', 'annotations', 'xmls')
+
+model_path = os.path.join(ml_root, 'ml', 'models', 'roadsight_v2.pt')
 
 if not os.path.exists(model_path):
     raise FileNotFoundError(f"Model not found at '{model_path}'")

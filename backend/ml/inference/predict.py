@@ -31,7 +31,9 @@ transform = transforms.Compose([
 # -----------------------------
 # 4️⃣ Load the fine-tuned model
 # -----------------------------
-model_path = "C:\Users\saima\OneDrive\Desktop\RoadSight\RoadSight\backend\ml\models\roadsight_v2.pt"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+ml_root = os.path.dirname(current_dir)
+model_path = os.path.join(ml_root, 'ml', 'models', 'roadsight_v2.pt')
 
 if not os.path.exists(model_path):
     print(f"Error: Model not found at '{model_path}'")
